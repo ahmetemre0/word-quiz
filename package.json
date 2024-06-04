@@ -1,0 +1,21 @@
+{
+  "name": "word-quiz",
+  "version": "1.0.0",
+  "description": "Word recognition quiz editor backend with express.js for educational purpose",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "joi": "^17.13.1",
+    "mongoose": "^8.4.1",
+    "nodemon": "^3.1.3"
+  }
+}
