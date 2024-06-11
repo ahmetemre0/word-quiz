@@ -3,7 +3,10 @@ const WordList = require('../model/WordList');
 
 const ObjectFinder =  async (req, res, next) => {
     // check endpoint for determining the id name of request
-    const endpoint = req.originalUrl.split('api/v1/')[1];
+    if (!req.originalUrl.startsWith('/api/v1/')) {
+        return res.status(400).json({ message: 'Invalid endpoint' });
+    }
+    const endpoint = req.originalUrl.split('/')[3];
     if (endpoint !== 'word' && endpoint !== 'list' && endpoint !== 'quiz') {
         return res.status(400).json({ message: 'Invalid endpoint' });
     }
