@@ -61,12 +61,12 @@ router.patch('/', ObjectFinder, async (req, res) => {
     res.json({ message: 'Word updated successfully' });
 });
 
-// DELETE /api/v1/word
-router.delete('/', ObjectFinder, async (req, res) => {
+// DELETE /api/v1/word/delete
+router.post('/delete', ObjectFinder, async (req, res) => {
     if (!req.word) {
         return res.status(404).json({ message: 'Word not found' });
     }
-    await req.word.remove();
+    await req.word.deleteOne();
     res.json({ message: 'Word deleted successfully' });
 });
 
