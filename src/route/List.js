@@ -141,4 +141,57 @@ router.get('/delete', ObjectFinder, async (req, res) => {
     }
 });
 
+// POST /api/v1/list/multi-add
+router.post('/multi-add', async (req, res) => {
+    const schema = joi.object({
+        name: joi.string().required(),
+        words: joi.array().items(joi.object({
+            id: joi.string().required()
+        })).required()
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+    }
+    const { name, words } = req.body;
+    const list = new WordList({ name });
+    list.words = [];
+    for (let i = 0; i < words.length; i++) {
+        const word = await Word.findOne({ _id: words[i].id });
+        if (!word) {
+            return res.status(404).json({ message: 'Word not found' });
+        }
+        list.words.push({ word: words[i].id });
+    }
+    try {
+        await list.save();
+        res.json({ message: 'List created successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// POST /api/v1/list/multi-remove
+router.post('/multi-remove', ObjectFinder, async (req, res) => {
+    const schema = joi.object({
+        words: joi.array().items(joi.object({
+            id: joi.string().required()
+        })).required()
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.details[0].message });
+    }
+    const { words } = req.body;
+    try {
+        req.list.words = req.list.words.filter(element => {
+            return !words.find(word => word.id == element);
+        });
+        await req.list.save();
+        res.json({ message: 'Words removed from list successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
