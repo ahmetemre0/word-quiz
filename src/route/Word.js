@@ -37,20 +37,20 @@ router.post('/', async (req, res) => {
     res.json({ message: 'Word created successfully' });
 });
 
-// PATCH /api/v1/word
-router.patch('/', ObjectFinder, async (req, res) => {
+// POST /api/v1/word/edit
+router.post('/edit', ObjectFinder, async (req, res) => {
     if (!req.word) {
         return res.status(404).json({ message: 'Word not found' });
     }
-    const schema = joi.object({
+    /* const schema = joi.object({
         originalWord: joi.string(),
         meanings: joi.array().items(joi.string())
     });
-    const { error } = schema.validate(req.body);
+    const { error } = schema.validate(req.word);
     if (error) {
         return res.status(400).json({ message: error.details[0].message });
-    }
-    const { originalWord, meanings } = req.body;
+    } */
+    const { originalWord, meanings } = req.word;
     if (originalWord) {
         req.word.originalWord = originalWord;
     }
@@ -61,7 +61,7 @@ router.patch('/', ObjectFinder, async (req, res) => {
     res.json({ message: 'Word updated successfully' });
 });
 
-// DELETE /api/v1/word/delete
+// POST /api/v1/word/delete
 router.post('/delete', ObjectFinder, async (req, res) => {
     if (!req.word) {
         return res.status(404).json({ message: 'Word not found' });
