@@ -21,17 +21,9 @@ router.get('/', ObjectFinder, async (req, res) => {
     }
 });
 
-// POST /api/v1/word
-router.post('/', async (req, res) => {
-    const schema = joi.object({
-        originalWord: joi.string().required(),
-        meanings: joi.array().items(joi.string()).required()
-    });
-    const { error } = schema.validate(req.body);
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
-    }
-    const { originalWord, meanings } = req.body;
+// POST /api/v1/word/add
+router.post('/add', async (req, res) => {
+    const { originalWord, meanings } = req.body.word;
     const word = new Word({ originalWord, meanings });
     await word.save();
     res.json({ message: 'Word created successfully' });
@@ -42,14 +34,7 @@ router.post('/edit', ObjectFinder, async (req, res) => {
     if (!req.word) {
         return res.status(404).json({ message: 'Word not found' });
     }
-    /* const schema = joi.object({
-        originalWord: joi.string(),
-        meanings: joi.array().items(joi.string())
-    });
-    const { error } = schema.validate(req.word);
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
-    } */
+    
     const { originalWord, meanings } = req.word;
     if (originalWord) {
         req.word.originalWord = originalWord;
