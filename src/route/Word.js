@@ -70,4 +70,11 @@ router.post('/delete', ObjectFinder, async (req, res) => {
     res.json({ message: 'Word deleted successfully' });
 });
 
+// POST /api/v1/word/deleteMultiple
+router.post('/deleteMultiple', async (req, res) => {
+    const { words } = req.body;
+    await Word.deleteMany({ _id: { $in: words } });
+    res.json({ message: 'Words deleted successfully' });
+});
+
 module.exports = router;
