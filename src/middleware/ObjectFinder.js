@@ -23,6 +23,10 @@ const ObjectFinder =  async (req, res, next) => {
     let id, wordId;
     if (endpoint === 'word') {
         id = source.id;
+        if (!id) {
+            next();
+        }
+
         try {
             const word = await Word.findById(id);
             if (!word) {
