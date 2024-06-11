@@ -24,7 +24,7 @@ const ObjectFinder =  async (req, res, next) => {
     if (endpoint === 'word') {
         id = source.id;
         if (!id) {
-            next();
+            return next();
         }
 
         try {
