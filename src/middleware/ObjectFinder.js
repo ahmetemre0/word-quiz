@@ -45,12 +45,11 @@ const ObjectFinder =  async (req, res, next) => {
         }
     }
     if (endpoint === 'list') {
-        if(!source.list || !source.list._id || !source.wordId) {
+        id = source.id;
+        wordId = source.wordId;
+        if (!id) {
             return next();
         }
-
-        id = source.list._id;
-        wordId = source.wordId;
         try {
             if (id){
                 const list = await WordList.findById(id);
