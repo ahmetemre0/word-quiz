@@ -11,12 +11,11 @@ router.get('/', ObjectFinder, async (req, res) => {
         const list = {
             id: req.list._id,
             name: req.list.name,
-            words: req.list.words.map(element => {
-                originalWord = element.originalWord;
-                meanings = element.meanings;
-                return { originalWord, meanings };
-            })
-        };
+            words: await Promise.all(req.list.words.map(async (element) => {
+                const word = await Word.findOne({ _id: element });
+                return word;
+            }))
+        }
         res.json(list);
     }
     else {
@@ -24,7 +23,7 @@ router.get('/', ObjectFinder, async (req, res) => {
         
         const data = await Promise.all(lists.map(async (list) => {
             const words = await Promise.all(list.words.map(async (element) => {
-                const word = await Word.findOne({ _id: element }, { originalWord: 1, meanings: 1, _id: 0 });
+                const word = await Word.findOne({ _id: element });
                 return word;
             }));
 
