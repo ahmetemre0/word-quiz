@@ -28,7 +28,7 @@ router.get('/', ObjectFinder, async (req, res) => {
             }));
 
             return {
-                id: list._id,
+                _id: list._id,
                 name: list.name,
                 words: words
             };
@@ -38,21 +38,11 @@ router.get('/', ObjectFinder, async (req, res) => {
     }
 });
 
-// POST /api/v1/list
-router.post('/', async (req, res) => {
-    const schema = joi.object({
-        name: joi.string().required(),
-        words: joi.array().items(joi.object({
-            id: joi.string().required()
-        }))
-    });
-    const { error } = schema.validate(req.body);
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
-    }
-    const { name } = req.body;
+// POST /api/v1/list/add
+router.post('/add', async (req, res) => {
+
+    const { name, words } = req.body.list;
     const list = new WordList({ name });
-    const words = req.body.words;
     list.words = [];
     for (let i = 0; i < words.length; i++) {
         const word = await Word.findOne({ _id: words[i].id });
@@ -130,11 +120,23 @@ router.post('/rename', ObjectFinder, async (req, res) => {
     }
 });
 
-// GET /api/v1/list/delete
-router.get('/delete', ObjectFinder, async (req, res) => {
+// POST /api/v1/list/delete
+router.post('/delete', ObjectFinder, async (req, res) => {
     try {
-        await WordList.findByIdAndDelete(req.list._id);
+        await WordList.findByIdAndDelete(req.body.list._id);
         res.json({ message: 'List deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// POST /api/v1/list/deleteMultiple
+router.post('/deleteMultiple', async (req, res) => {
+
+    const lists = req.body.lists;
+    try {
+        await WordList.deleteMany({ _id: { $in: lists } });
+        res.json({ message: 'Lists deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -172,15 +174,7 @@ router.post('/multi-add', async (req, res) => {
 
 // POST /api/v1/list/multi-remove
 router.post('/multi-remove', ObjectFinder, async (req, res) => {
-    const schema = joi.object({
-        words: joi.array().items(joi.object({
-            id: joi.string().required()
-        })).required()
-    });
-    const { error } = schema.validate(req.body);
-    if (error) {
-        return res.status(400).json({ message: error.details[0].message });
-    }
+
     const { words } = req.body;
     try {
         req.list.words = req.list.words.filter(element => {
