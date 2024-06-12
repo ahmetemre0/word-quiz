@@ -1,12 +1,16 @@
 const Word = require('../model/Word');
 const WordList = require('../model/WordList');
+const Quiz = require('../model/Quiz');
 
 const ObjectFinder =  async (req, res, next) => {
     // check endpoint for determining the id name of request
     if (!req.originalUrl.startsWith('/api/v1/')) {
         return res.status(400).json({ message: 'Invalid endpoint' });
     }
-    const endpoint = req.originalUrl.split('/')[3];
+    let endpoint = req.originalUrl.split('/')[3];
+    if(endpoint.includes('?')) {
+        endpoint = endpoint.split('?')[0];
+    }
     if (endpoint !== 'word' && endpoint !== 'list' && endpoint !== 'quiz') {
         return res.status(400).json({ message: 'Invalid endpoint' });
     }
@@ -14,7 +18,7 @@ const ObjectFinder =  async (req, res, next) => {
     const method = req.method;
     let source;
     if (method === 'GET') {
-        source = req.params;
+        source = req.query;
     }
     else if (method === 'POST') {
         source = req.body;
@@ -25,11 +29,10 @@ const ObjectFinder =  async (req, res, next) => {
         
     let id, wordId;
     if (endpoint === 'word') {
-        if (!source.word || !source.word._id) {
+        id = source.id;
+        if (!id) {
             return next();
         }
-
-        id = source.word._id;
 
         try {
             const word = await Word.findById(id);
@@ -42,6 +45,7 @@ const ObjectFinder =  async (req, res, next) => {
         }
     }
     if (endpoint === 'list') {
+
         id = source.id;
         wordId = source.wordId;
         try {
@@ -67,7 +71,7 @@ const ObjectFinder =  async (req, res, next) => {
     if (endpoint === 'quiz') {
         id = source.id;
         if (!id) {
-            next();
+            return next();
         }
         try {
             const quiz = await Quiz.findById(id);
