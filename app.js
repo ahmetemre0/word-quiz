@@ -16,7 +16,6 @@ app.listen(8000, () => {
 const ListRouter = require('./src/route/List');
 const WordRouter = require('./src/route/Word');
 const QuizRouter = require('./src/route/Quiz');
-app.use('/api/v1/list', ListRouter);
 
 
 app.use('/api/v1/list', ListRouter);
